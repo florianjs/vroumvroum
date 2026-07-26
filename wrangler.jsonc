@@ -11,7 +11,7 @@
     {
       "binding": "DB",
       "database_name": "vroumvroum",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "1795ced6-2ee2-493d-b6be-11272e67ee82",
       "migrations_dir": "migrations"
     }
   ],

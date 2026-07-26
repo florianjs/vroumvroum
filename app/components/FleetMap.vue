@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import type { VehiclePosition, VehicleRoute } from '#shared/types/vehicle'
 import type { Feature, FeatureCollection, LineString } from 'geojson'
-import { Map as MaplibreMap, NavigationControl, Popup } from 'maplibre-gl'
+import { Map as MaplibreMap, NavigationControl, Popup, setWorkerUrl } from 'maplibre-gl'
 import type { GeoJSONSource, LngLatBoundsLike } from 'maplibre-gl'
+// MapLibre resolves its worker as a sibling file of its own bundle, which the
+// build does not emit — without this the map silently loads no tiles in production.
+import maplibreWorkerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
+
+setWorkerUrl(maplibreWorkerUrl)
 
 const props = defineProps<{
   vehicles: VehiclePosition[]

@@ -228,7 +228,8 @@ export async function ensureFleetSeeded(db: D1Database): Promise<void> {
     ])
     return db
       .prepare(
-        `INSERT INTO vehicles (id, plate, driver_name, model, route, speed_kmh, route_offset)
+        // OR IGNORE: concurrent first requests would otherwise race on the unique plate.
+        `INSERT OR IGNORE INTO vehicles (id, plate, driver_name, model, route, speed_kmh, route_offset)
          VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)`,
       )
       .bind(
