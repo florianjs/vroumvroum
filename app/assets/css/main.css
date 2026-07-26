@@ -1,0 +1,238 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   Design tokens — "dispatch instrument panel"
+   Asphalt-tinted paper, hairline rules, mono readouts. Light theme only.
+--------------------------------------------------------------------------- */
+
+@theme {
+  /* Surfaces & ink */
+  --color-paper: #f1f2ef;
+  --color-paper-deep: #e8eae5;
+  --color-surface: #ffffff;
+  --color-rule: #e2e4df;
+  --color-rule-strong: #cdd1c9;
+  --color-ink: #111417;
+  --color-ink-soft: #4b545e;
+  --color-ink-mute: #838d96;
+
+  /* Duty states */
+  --color-transit: #0e7c66;
+  --color-transit-soft: #e4f1ed;
+  --color-idle: #6b7280;
+  --color-idle-soft: #ecedef;
+
+  /* Interaction — hi-vis, reserved for selection & primary actions */
+  --color-hivis: #f04e23;
+  --color-hivis-deep: #cc3d16;
+  --color-hivis-soft: #fdeae4;
+
+  --color-danger: #b42318;
+  --color-danger-soft: #fdeceb;
+
+  /* Type */
+  --font-sans: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Instrument geometry: tight radii, hairline elevation */
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius-md: 5px;
+  --radius-lg: 7px;
+  --radius-xl: 10px;
+
+  --shadow-hairline: 0 1px 0 0 rgb(17 20 23 / 0.04);
+  --shadow-panel: 0 1px 2px rgb(17 20 23 / 0.05), 0 8px 24px -12px rgb(17 20 23 / 0.16);
+  --shadow-float: 0 2px 4px rgb(17 20 23 / 0.06), 0 18px 48px -18px rgb(17 20 23 / 0.28);
+
+  --ease-instrument: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: var(--color-hivis);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-hivis);
+    outline-offset: 2px;
+  }
+
+  /* Thin, quiet scrollbars — the roster scrolls a lot. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-rule-strong) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--color-rule-strong);
+    border: 2px solid transparent;
+    background-clip: content-box;
+    border-radius: 99px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-ink-mute);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Primitives used across the dashboard
+--------------------------------------------------------------------------- */
+
+@utility panel {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}
+
+/* Uppercase micro-label above a value or section. */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-ink-mute);
+}
+
+/* Any number the operator reads off the screen. */
+@utility readout {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Scrolling strips (the command-bar readouts) keep their own bar out of the way. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Hairline grid texture — used behind the sign-in brand panel. */
+@utility asphalt {
+  background-image:
+    linear-gradient(to right, rgb(17 20 23 / 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(17 20 23 / 0.045) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ---------------------------------------------------------------------------
+   Motion
+--------------------------------------------------------------------------- */
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.7;
+  }
+
+  70%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes sweep {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  background-color: currentColor;
+  animation: pulse-ring 2s var(--ease-instrument) infinite;
+}
+
+.skeleton-sweep::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.65), transparent);
+  animation: sweep 1.6s ease-in-out infinite;
+}
+
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.18s var(--ease-instrument);
+}
+
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* MapLibre chrome, restyled to the design system. */
+.maplibregl-ctrl-group {
+  background-color: var(--color-surface) !important;
+  border: 1px solid var(--color-rule) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-panel) !important;
+}
+
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--color-rule) !important;
+}
+
+.maplibregl-ctrl-attrib {
+  font-family: var(--font-mono) !important;
+  font-size: 10px !important;
+}
+
+.maplibregl-popup-content {
+  padding: 0 !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-float) !important;
+  border: 1px solid var(--color-rule);
+}
+
+.maplibregl-popup-tip {
+  display: none !important;
+}
